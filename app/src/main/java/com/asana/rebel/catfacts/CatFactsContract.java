@@ -21,6 +21,8 @@ public interface CatFactsContract {
         void showCatFacts(List<Fact> catFacts);
 
         void showClickedCatFact(Fact fact);
+
+        void shareClickedCatFact(Fact fact);
     }
 
     interface Presenter extends BasePresenter {
@@ -28,5 +30,7 @@ public interface CatFactsContract {
         void loadCatFacts(int length);
 
         void onCatFactClicked(Fact fact);
+
+        void onCatFactShareClicked(Fact fact);
     }
 }

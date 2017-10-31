@@ -24,6 +24,7 @@ import com.asana.rebel.customviews.OnVerticalScrollListener;
 import com.asana.rebel.customviews.RecyclerViewEmptySupport;
 import com.asana.rebel.data.CatFactRepository;
 import com.asana.rebel.data.models.Fact;
+import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,11 @@ public class CatFactsFragment extends BaseNetworkFragment implements CatFactsCon
             @Override
             public void onItemClick(Fact fact) {
                 mPresenter.onCatFactClicked(fact);
+            }
+
+            @Override
+            public void onItemShareClick(Fact fact) {
+                mPresenter.onCatFactShareClicked(fact);
             }
         });
     }
@@ -245,13 +251,25 @@ public class CatFactsFragment extends BaseNetworkFragment implements CatFactsCon
         Toast.makeText(getActivity(), fact.getFact(), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void shareClickedCatFact(Fact fact) {
+        if (fact != null && !fact.getFact().isEmpty()) {
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, fact.getFact());
+            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_using)));
+        } else {
+            Toast.makeText(getActivity(), getResources().getString(R.string.no_cat_fact_text), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     @Override
     public void setPresenter(CatFactsContract.Presenter presenter) {
         mPresenter = presenter;
     }
 
-    public static class CatFactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public static class CatFactsAdapter extends RecyclerSwipeAdapter<RecyclerView.ViewHolder> {
         private static final int TYPE_ITEM = 1;
 
         private List<Fact> mCatFacts;
@@ -287,6 +305,11 @@ public class CatFactsFragment extends BaseNetworkFragment implements CatFactsCon
                     public void onItemClick(int position) {
                         mOnItemClickListener.onItemClick(mCatFacts.get(position));
                     }
+
+                    @Override
+                    public void onItemShareClick(int position) {
+                        mOnItemClickListener.onItemShareClick(mCatFacts.get(position));
+                    }
                 });
             } else {
                 throw new IllegalStateException("Not a valid type");
@@ -312,6 +335,12 @@ public class CatFactsFragment extends BaseNetworkFragment implements CatFactsCon
             return (null != mCatFacts ? mCatFacts.size() : 0);
         }
 
+        @Override
+        public int getSwipeLayoutResourceId(int position) {
+            return R.id.swipe;
+
+        }
+
         public static class ItemViewHolder extends RecyclerView.ViewHolder {
 
             @BindView(R.id.tv_cat_fact_title)
@@ -330,13 +359,22 @@ public class CatFactsFragment extends BaseNetworkFragment implements CatFactsCon
                 mOnItemInteractionListener.onItemClick(getAdapterPosition());
             }
 
+            @OnClick(R.id.ll_share)
+            void itemShareClick() {
+                mOnItemInteractionListener.onItemShareClick(getAdapterPosition());
+            }
+
             interface OnItemInteractionListener {
                 void onItemClick(int position);
+
+                void onItemShareClick(int position);
             }
         }
 
         private interface OnItemClickListener {
             void onItemClick(Fact fact);
+
+            void onItemShareClick(Fact fact);
         }
     }
 }

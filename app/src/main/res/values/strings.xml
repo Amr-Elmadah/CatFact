@@ -6,4 +6,7 @@
     <string name="retry">Retry</string>
     <string name="no_cat_facts">No cat facts found</string>
     <string name="max_length">Max Length : </string>
+    <string name="share">Share</string>
+    <string name="no_cat_fact_text">No fact value for that Fact item</string>
+    <string name="share_using">Share fact using</string>
 </resources>

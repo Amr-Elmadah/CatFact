@@ -82,6 +82,11 @@ public class CatFactsPresenter implements CatFactsContract.Presenter {
     }
 
     @Override
+    public void onCatFactShareClicked(Fact fact) {
+        mView.shareClickedCatFact(fact);
+    }
+
+    @Override
     public void start() {
         loadCatFacts(mLength);
     }
